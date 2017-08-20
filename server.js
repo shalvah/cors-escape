@@ -17,17 +17,18 @@ function parseEnvList(env) {
 }
 
 // Set up rate-limiting to avoid abuse of the public CORS Anywhere server.
-var checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELIMIT);
+const checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELIMIT);
 
-var cors_proxy = require('./lib/cors-anywhere');
+const cors_proxy = require('./lib/cors-anywhere');
 cors_proxy.createServer({
   originBlacklist: originBlacklist,
   originWhitelist: originWhitelist,
-  requireHeader: ['origin', 'x-requested-with'],
+  requireHeader: ['origin'],
   checkRateLimit: checkRateLimit,
   removeHeaders: [
     'cookie',
-    'cookie2',
+    'coookie2',
+    'origin',
     // Strip Heroku-specific headers
     'x-heroku-queue-wait-time',
     'x-heroku-queue-depth',
