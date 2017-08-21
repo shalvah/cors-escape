@@ -28,7 +28,6 @@ cors_proxy.createServer({
   removeHeaders: [
     'cookie',
     'coookie2',
-    'origin',
     // Strip Heroku-specific headers
     'x-heroku-queue-wait-time',
     'x-heroku-queue-depth',
@@ -40,6 +39,7 @@ cors_proxy.createServer({
     // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
     xfwd: false,
   },
+  spoofOrigin: true
 }).listen(port, host, function() {
   console.log('Running CORS Escape on ' + host + ':' + port);
 });
