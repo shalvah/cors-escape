@@ -21,13 +21,13 @@
   ],
   "main": "server.js",
   "dependencies": {
-    "http-proxy": "1.11.1",
-    "proxy-from-env": "0.0.1"
+    "http-proxy": "^1.17.0",
+    "proxy-from-env": "^1.0.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.3",
     "istanbul": "^0.4.2",
-    "lolex": "^1.5.0",
+    "lolex": "^4.0.1",
     "mocha": "^6.1.4",
     "nock": "^10.0.6",
     "supertest": "^4.0.2"
@@ -37,7 +37,7 @@
     "test-coverage": "istanbul cover ./node_modules/.bin/_mocha -- test/test.js test/test-ratelimit.js --reporter spec"
   },
   "engines": {
-    "node": ">=0.10.0",
-    "npm": ">=1.1.0"
+    "node": ">=8.10.0",
+    "npm": ">=6.1.0"
   }
 }
