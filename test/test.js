@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 require('./setup');
 
 var createServer = require('../').createServer;
@@ -149,7 +148,7 @@ describe('Basic functionality', function() {
       .post('/example.com/echopost')
       .attach('file', path.join(__dirname, 'dummy.txt'))
       .expect('Access-Control-Allow-Origin', '*')
-      .expect(/\r\nContent-Disposition: form-data; name="file"; filename="dummy.txt"\r\nContent-Type: text\/plain\r\n\r\ndummy content\n\r\n/, done); // eslint-disable-line max-len
+      .expect(/\r\nContent-Disposition: form-data; name="file"; filename="dummy.txt"\r\nContent-Type: text\/plain\r\n\r\ndummy content\n\r\n/, done);
   });
 
   it('HEAD with redirect should be followed', function(done) {

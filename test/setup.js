@@ -8,7 +8,6 @@ if (parseInt(process.versions.node, 10) >= 8) {
   Object.defineProperty(require('http').ClientRequest.prototype, '_headers', {
     get: function() {
       var request = this;
-      // eslint-disable-next-line no-undef
       return new Proxy(request.getHeaders(), {
         set: function(target, property, value) {
           request.setHeader(property, value);

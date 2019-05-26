@@ -8,7 +8,6 @@
  * These examples are provided as-is without guarantees. Use at your own risk.
  */
 
-/* eslint-env mocha */
 require('./setup');
 
 var createServer = require('../').createServer;

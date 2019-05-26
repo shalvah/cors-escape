@@ -1,6 +1,4 @@
-// Listen on a specific host via the HOST environment variable
 const host = process.env.HOST || '0.0.0.0';
-// Listen on a specific port via the PORT environment variable
 const port = process.env.PORT || 2000;
 
 // Grab the blacklist from the command-line so that we can update the blacklist without deploying
