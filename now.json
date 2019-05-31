@@ -2,5 +2,5 @@
   "builds": [
     { "src": "server.js", "use": "@now/node-server" }
   ],
-  "routes": [{ "src": "/server.js", "dest": "/" }]
+  "routes": [{ "src": "/", "dest": "/server.js" }]
 }
