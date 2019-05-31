@@ -1,43 +1,36 @@
 const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 2000;
 
-// Grab the blacklist from the command-line so that we can update the blacklist without deploying
+// Grab the blacklist from the environment so that we can update the blacklist without deploying
 // again. CORS Anywhere is open by design, and this blacklist is not used, except for countering
 // immediate abuse (e.g. denial of service). If you want to block all origins except for some,
 // use originWhitelist instead.
-const originBlacklist = parseEnvList(process.env.CORSANYWHERE_BLACKLIST);
-const originWhitelist = parseEnvList(process.env.CORSANYWHERE_WHITELIST);
-function parseEnvList(env) {
-  if (!env) {
-    return [];
-  }
-  return env.split(',');
-}
+const {parseEnvVarAsList} = require('./lib/helpers');
+const originBlacklist = parseEnvVarAsList(process.env.CORSANYWHERE_BLACKLIST);
+const originWhitelist = parseEnvVarAsList(process.env.CORSANYWHERE_WHITELIST);
 
 // Set up rate-limiting to avoid abuse of the public CORS Anywhere server.
 const checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELIMIT);
 
-const cors_proxy = require('./lib/cors-anywhere');
-cors_proxy.createServer({
-  originBlacklist: originBlacklist,
-  originWhitelist: originWhitelist,
-  requireHeader: ['origin'],
-  checkRateLimit: checkRateLimit,
-  removeHeaders: [
-    'cookie',
-    'coookie2',
-    // Strip Heroku-specific headers
-    'x-heroku-queue-wait-time',
-    'x-heroku-queue-depth',
-    'x-heroku-dynos-in-use',
-    'x-request-start',
-  ],
-  redirectSameOrigin: true,
-  httpProxyOptions: {
-    // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
-    xfwd: false,
-  },
-  spoofOrigin: true
-}).listen(port, host, function() {
-  console.log('Running CORS Escape on ' + host + ':' + port);
+const corsProxy = require('./lib/cors-anywhere');
+corsProxy.createServer({
+    originBlacklist,
+    originWhitelist,
+    requireHeader: ['origin'],
+    checkRateLimit,
+    removeHeaders: [
+        // Strip Heroku-specific headers
+        'x-heroku-queue-wait-time',
+        'x-heroku-queue-depth',
+        'x-heroku-dynos-in-use',
+        'x-request-start',
+    ],
+    redirectSameOrigin: true,
+    httpProxyOptions: {
+        // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
+        xfwd: false,
+    },
+    spoofOrigin: true
+}).listen(port, host, () => {
+    console.log('Running CORS Escape on ' + host + ':' + port);
 });
