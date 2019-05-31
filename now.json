@@ -1,0 +1,6 @@
+{
+  "name": "cors-escape",
+  "builders": [
+    { "src": "server.js", "use": "@now/node" }
+  ]
+}
