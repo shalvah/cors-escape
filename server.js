@@ -31,6 +31,6 @@ corsProxy.createServer({
         xfwd: false,
     },
     spoofOrigin: true
-}).listen(port, host, () => {
+}).listen(port, () => {
     console.log('Running CORS Escape on ' + host + ':' + port);
 });
