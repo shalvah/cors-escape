@@ -1,9 +1,21 @@
 {
   "builds": [
-    { "src": "server.js", "use": "@now/node-server" }
+    {
+      "src": "server.js",
+      "use": "@now/node-server"
+    }
   ],
-  "routes": [{ "src": "/(?<url>.*)", "dest": "/server.js?url=$url" }],
+  "routes": [
+    {
+      "src": "/\\?url=(?<url>.*)",
+      "dest": "/server.js?url=$url"
+    },
+    {
+      "src": "/(?<url>.*)",
+      "dest": "/server.js?url=$url"
+    }
+  ],
   "env": {
-      "DEBUG": "cors-escape"
+    "DEBUG": "cors-escape"
   }
 }
