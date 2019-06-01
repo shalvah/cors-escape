@@ -611,10 +611,10 @@ describe('redirectSameOrigin', function() {
   });
 });
 
-describe('requireHeader', function() {
+describe('requireHeaders', function() {
   before(function() {
     cors_anywhere = createServer({
-      requireHeader: ['origin', 'x-requested-with'],
+      requireHeaders: ['origin', 'x-requested-with'],
     });
     cors_anywhere_port = cors_anywhere.listen(0).address().port;
   });
@@ -643,10 +643,10 @@ describe('requireHeader', function() {
       .expect(200, done);
   });
 
-  it('GET /example.com without header (requireHeader as string)', function(done) {
+  it('GET /example.com without header (requireHeaders as string)', function(done) {
     stopServer(function() {
       cors_anywhere = createServer({
-        requireHeader: 'origin',
+        requireHeaders: ['origin'],
       });
       cors_anywhere_port = cors_anywhere.listen(0).address().port;
       request(cors_anywhere)
@@ -656,10 +656,10 @@ describe('requireHeader', function() {
     });
   });
 
-  it('GET /example.com with header (requireHeader as string)', function(done) {
+  it('GET /example.com with header (requireHeaders as string)', function(done) {
     stopServer(function() {
       cors_anywhere = createServer({
-        requireHeader: 'origin',
+        requireHeaders: ['origin'],
       });
       cors_anywhere_port = cors_anywhere.listen(0).address().port;
       request(cors_anywhere)

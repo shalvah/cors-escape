@@ -7,10 +7,6 @@
   ],
   "routes": [
     {
-      "src": "/\\?url=(?<url>.*)",
-      "dest": "/server.js?url=$url"
-    },
-    {
       "src": "/(?<url>.*)",
       "dest": "/server.js?url=$url"
     }

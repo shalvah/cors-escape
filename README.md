@@ -1,13 +1,8 @@
 **CORS Escape** is a Node.js proxy which adds CORS headers to the proxied request. Inspired by [CORS-Anywhere](https://github.com/Rob--W/)
 
-The url to proxy is taken from the path, validated and proxied. The protocol
-part of the proxied URI is optional, and defaults to "http". If port 443 is specified,
-the protocol defaults to "https".
+The url to proxy is taken from the path or the `url` query parameter, validated and proxied. The protocol part of the proxied URI is optional, and defaults to "http". If port 443 is specified, the protocol defaults to "https".
 
-This package does not put any restrictions on the http methods or headers, except for
-cookies. Requesting [user credentials](http://www.w3.org/TR/cors/#user-credentials) is disallowed.
-The app can be configured to require a header for proxying a request, for example to avoid
-a direct visit from the browser.
+- ALl headers sent in your request will be passed along to the 
 
 ## Example
 
@@ -20,7 +15,7 @@ var port = process.env.PORT || 8080;
 var cors_proxy = require('cors-anywhere');
 cors_proxy.createServer({
     originWhitelist: [], // Allow all origins
-    requireHeader: ['origin', 'x-requested-with'],
+    requireHeaders: ['origin', 'x-requested-with'],
     removeHeaders: ['cookie', 'cookie2']
 }).listen(port, host, function() {
     console.log('Running CORS Anywhere on ' + host + ':' + port);
@@ -97,7 +92,7 @@ proxy requests. The following options are supported:
 * boolean `redirectSameOrigin` - If true, requests to URLs from the same origin will not be proxied but redirected.
   The primary purpose for this option is to save server resources by delegating the request to the client
   (since same-origin requests should always succeed, even without proxying).
-* array of strings `requireHeader` - If set, the request must include this header or the API will refuse to proxy.  
+* array of strings `requireHeaders` - If set, the request must include this header or the API will refuse to proxy.  
   Recommended if you want to prevent users from using the proxy for normal browsing.  
   Example: `['Origin', 'X-Requested-With']`.
 * array of lowercase strings `removeHeaders` - Exclude certain headers from being included in the request.  
