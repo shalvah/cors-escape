@@ -1,6 +1,6 @@
 {
-  "name": "cors-anywhere",
-  "description": "CORS Anywhere is a reverse proxy which adds CORS headers to the proxied request. Request URL is taken from the path",
+  "name": "cors-escape",
+  "description": "CORS Escape is a reverse proxy which adds CORS headers to the proxied request. Request URL is taken from the path",
   "license": "MIT",
   "repository": {
     "type": "git",

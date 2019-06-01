@@ -1,8 +1,8 @@
 /**
- * CORS Anywhere is designed for use as a standalone server. Sometimes you want
+ * CORS Escape is designed for use as a standalone server. Sometimes you want
  * to have extra functionality on top of the default CORS server. If it may be
  * useful to others, please open a feature request on the issue tracker at
- * https://github.com/Rob--W/cors-anywhere/issues.
+ * https://github.com/Rob--W/cors-escape/issues.
  *
  * If it is only useful to your application, look below for some examples.
  * These examples are provided as-is without guarantees. Use at your own risk.
@@ -19,7 +19,7 @@ var http = require('http');
 describe('Examples', function() {
   // Note: In the examples below we don't listen on any port after calling
   // createServer() because it is not needed to start listening on a port if the
-  // CORS Anywhere is only used internally.
+  // CORS Escape is only used internally.
 
   // And normally you have to listen on some port, like this:
   //
@@ -29,7 +29,7 @@ describe('Examples', function() {
   // the examples don't have an explicit .listen() call.
 
   it('Rewrite proxy URL', function(done) {
-    var cors_anywhere = createServer();
+    var cors_escape = createServer();
 
     var http_server = http.createServer(function(req, res) {
       // For testing, check whether req.url is the same as what we input below.
@@ -38,7 +38,7 @@ describe('Examples', function() {
       // Basic example: Always proxy example.com.
       req.url = '/http://example.com';
 
-      cors_anywhere.emit('request', req, res);
+      cors_escape.emit('request', req, res);
     });
 
     request(http_server)
@@ -49,7 +49,7 @@ describe('Examples', function() {
   });
 
   it('Transform response to uppercase (streaming)', function(done) {
-    var cors_anywhere = createServer();
+    var cors_escape = createServer();
 
     var http_server = http.createServer(function(req, res) {
       var originalWrite = res.write;
@@ -67,7 +67,7 @@ describe('Examples', function() {
         originalWrite.call(this, data, encoding, callback);
       };
 
-      cors_anywhere.emit('request', req, res);
+      cors_escape.emit('request', req, res);
     });
 
     request(http_server)
@@ -78,7 +78,7 @@ describe('Examples', function() {
   });
 
   it('Transform response to uppercase (buffered)', function(done) {
-    var cors_anywhere = createServer();
+    var cors_escape = createServer();
 
     var http_server = http.createServer(function(req, res) {
       var originalWrite = res.write;
@@ -119,7 +119,7 @@ describe('Examples', function() {
         this.end(data, 'utf8', callback);
       };
 
-      cors_anywhere.emit('request', req, res);
+      cors_escape.emit('request', req, res);
     });
 
     request(http_server)

@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Demo of CORS Anywhere</title>
+<title>Demo of CORS Escape</title>
 <meta name="viewport" content="width=device-width">
 <style>
 html, body {
@@ -46,7 +46,7 @@ textarea {
 </head>
 <body>
 <div id="top">
-  CORS Anywhere demo &bull; <a href="https://github.com/Rob--W/cors-anywhere/">Github</a> &bull; <a href="http://cors-anywhere.herokuapp.com">Live server</a>.
+  CORS Escape demo &bull; <a href="https://github.com/Rob--W/cors-escape/">Github</a> &bull; <a href="http://cors-escape.herokuapp.com">Live server</a>.
   <label>
     Url to be fetched (example: <a href="//robwu.nl/dump.php">robwu.nl/dump.php</a>)
     <input type="url" id="url" value="">
@@ -64,7 +64,7 @@ textarea {
 </div>
 
 <script>
-  var cors_api_url = 'https://cors-anywhere.herokuapp.com/';
+  var cors_api_url = 'https://cors-escape.herokuapp.com/';
   function doCORSRequest(options, printResult) {
     var x = new XMLHttpRequest();
     x.open(options.method, cors_api_url + options.url);
@@ -99,7 +99,7 @@ textarea {
     };
   })();
   if (typeof console === 'object') {
-    console.log('// To test a local CORS Anywhere server, set cors_api_url. For example:');
+    console.log('// To test a local CORS Escape server, set cors_api_url. For example:');
     console.log('cors_api_url = "http://localhost:8080/"');
   }
 </script>

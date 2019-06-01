@@ -1,27 +1,13 @@
-**CORS Escape** is a Node.js proxy which adds CORS headers to the proxied request. Inspired by [CORS-Anywhere](https://github.com/Rob--W/)
+# cors-escape
+**CORS Escape** is a Node.js proxy which adds CORS headers to the proxied request. Inspired by [CORS-Anywhere](https://github.com/Rob--W/cors-anywhere)
 
-The url to proxy is taken from the path or the `url` query parameter, validated and proxied. The protocol part of the proxied URI is optional, and defaults to "http". If port 443 is specified, the protocol defaults to "https".
-
-- ALl headers sent in your request will be passed along to the 
+- The url to proxy is taken from the path, validated and proxied. The protocol part of the proxied URI is optional, and defaults to "http". If port 443 is specified, the protocol defaults to "https".
+- The HTTP method used in your request wiil be used in requesting the resource.
+- All headers sent in your request will be passed along to the destination, except for the Origin header which is set to the same domain as the destination.
+ - Redirects from the destination will be followed and the final response returned. This response will have an `x-cors-redirect-n` header ()where n starts at 1) for each redirect, containing the status code and URL redirected to. There wil also be an `x-final-url` header containing the final URL.
 
 ## Example
 
-```javascript
-// Listen on a specific host via the HOST environment variable
-var host = process.env.HOST || '0.0.0.0';
-// Listen on a specific port via the PORT environment variable
-var port = process.env.PORT || 8080;
-
-var cors_proxy = require('cors-anywhere');
-cors_proxy.createServer({
-    originWhitelist: [], // Allow all origins
-    requireHeaders: ['origin', 'x-requested-with'],
-    removeHeaders: ['cookie', 'cookie2']
-}).listen(port, host, function() {
-    console.log('Running CORS Anywhere on ' + host + ':' + port);
-});
-
-```
 Request examples:
 
 * `http://localhost:8080/http://google.com/` - Google.com with CORS headers
@@ -30,48 +16,14 @@ Request examples:
 * `http://localhost:8080/` - Shows usage text, as defined in `libs/help.txt`
 * `http://localhost:8080/favicon.ico` - Replies 404 Not found
 
-Live examples:
-
-* https://cors-anywhere.herokuapp.com/
-* https://robwu.nl/cors-anywhere.html - This demo shows how to use the API.
-
 ## Documentation
 
 ### Client
 
-To use the API, just prefix the URL with the API URL. Take a look at [demo.html](demo.html) for an example.
-A concise summary of the documentation is provided at [lib/help.txt](lib/help.txt).
+To use the API, make the request to your desired URL as normal, but prefix the URL with the API URL (see the examples above).
 
-If you want to automatically enable cross-domain requests when needed, use the following snippet:
+A concise summary of the documentation is provided at [lib/help.js](lib/help.js).
 
-```javascript
-(function() {
-    var cors_api_host = 'cors-anywhere.herokuapp.com';
-    var cors_api_url = 'https://' + cors_api_host + '/';
-    var slice = [].slice;
-    var origin = window.location.protocol + '//' + window.location.host;
-    var open = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function() {
-        var args = slice.call(arguments);
-        var targetOrigin = /^https?:\/\/([^\/]+)/i.exec(args[1]);
-        if (targetOrigin && targetOrigin[0].toLowerCase() !== origin &&
-            targetOrigin[1] !== cors_api_host) {
-            args[1] = cors_api_url + args[1];
-        }
-        return open.apply(this, args);
-    };
-})();
-```
-
-If you're using jQuery, you can also use the following code **instead of** the previous one:
-
-```javascript
-jQuery.ajaxPrefilter(function(options) {
-    if (options.crossDomain && jQuery.support.cors) {
-        options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
-    }
-});
-```
 
 ### Server
 
@@ -98,7 +50,7 @@ proxy requests. The following options are supported:
 * array of lowercase strings `removeHeaders` - Exclude certain headers from being included in the request.  
   Example: `["cookie"]`
 * dictionary of lowercase strings `setHeaders` - Set headers for the request (overwrites existing ones).  
-  Example: `{"x-powered-by": "CORS Anywhere"}`
+  Example: `{"x-powered-by": "CORS Escape"}`
 * number `corsMaxAge` - If set, an Access-Control-Max-Age request header with this value (in seconds) will be added.  
   Example: `600` - Allow CORS preflight request to be cached by the browser for 10 minutes.
 * string `helpFile` - Set the help file (shown at the homepage).  
@@ -112,26 +64,25 @@ For advanced users, the following options are also provided.
 * `httpsOptions` - If set, a `https.Server` will be created. The given options are passed to the
   [`https.createServer`](https://nodejs.org/api/https.html#https_https_createserver_options_requestlistener) method.
 
-For even more advanced usage (building upon CORS Anywhere),
+For even more advanced usage (building upon CORS Escape),
 see the sample code in [test/test-examples.js](test/test-examples.js).
 
 ### Demo server
 
-A public demo of CORS Anywhere is available at https://cors-anywhere.herokuapp.com. This server is
-only provided so that you can easily and quickly try out CORS Anywhere. To ensure that the service
+A public demo of CORS Escape is available at https://cors-escape-git-master.shalvah.now.sh. This server is
+only provided so that you can easily and quickly try out CORS Escape. To ensure that the service
 stays available to everyone, the number of requests per period is limited, except for requests from
 some explicitly whitelisted origins.
 
 If you expect lots of traffic, please host your own instance of CORS Escape, and make sure that
 the CORS Escape server only whitelists your site to prevent others from using your instance of CORS Escape as an open proxy.
 
-For instance, to run a CORS Anywhere server that accepts any request from some example.com sites on
-port 8080, use:
+For instance, to run a CORS Escape server that accepts any request from some example.com sites on port 8080, use:
 ```
 export PORT=8080
-export CORSANYWHERE_WHITELIST=https://example.com,http://example.com,http://example.com:8080
+export CORSESCAPE_WHITELIST=https://example.com,http://example.com,http://example.com:8080
 node server.js
 ```
 
 ## License
-MIT, baby.
+MIT

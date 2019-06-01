@@ -9,7 +9,7 @@ describe('memory usage', function() {
   var cors_api_url;
 
   var server;
-  var cors_anywhere_child;
+  var cors_escape_child;
   before(function(done) {
     server = http.createServer(function(req, res) {
       res.writeHead(200);
@@ -28,24 +28,24 @@ describe('memory usage', function() {
   beforeEach(function(done) {
     var cors_module_path = path.join(__dirname, 'child');
     var args = [];
-    // Uncomment this if you want to compare the performance of CORS Anywhere
+    // Uncomment this if you want to compare the performance of CORS Escape
     // with the standard no-op http module.
-    // args.push('use-http-instead-of-cors-anywhere');
-    cors_anywhere_child = fork(cors_module_path, args, {
+    // args.push('use-http-instead-of-cors-escape');
+    cors_escape_child = fork(cors_module_path, args, {
       execArgv: ['--expose-gc'],
     });
-    cors_anywhere_child.once('message', function(cors_url) {
+    cors_escape_child.once('message', function(cors_url) {
       cors_api_url = cors_url;
       done();
     });
   });
 
   afterEach(function() {
-    cors_anywhere_child.kill();
+    cors_escape_child.kill();
   });
 
   /**
-   * Perform N CORS Anywhere proxy requests to a simple test server.
+   * Perform N CORS Escape proxy requests to a simple test server.
    *
    * @param {number} n - number of repetitions.
    * @param {number} requestSize - Approximate size of request in kilobytes.
@@ -63,14 +63,14 @@ describe('memory usage', function() {
     };
     (function requestAgain() {
       if (remaining-- === 0) {
-        cors_anywhere_child.once('message', function(memory_usage_delta) {
+        cors_escape_child.once('message', function(memory_usage_delta) {
           console.log('Memory usage delta: ' + memory_usage_delta +
               ' (' + n + ' requests of ' + requestSize + ' kb each)');
           if (memory_usage_delta > memMax * 1e3) {
             // Note: Even if this error is reached, always profile (e.g. using
             // node-inspector) whether it is a true leak, and not e.g. noise
             // caused by the implementation of V8/Node.js.
-            // Uncomment args.push('use-http-instead-of-cors-anywhere') at the
+            // Uncomment args.push('use-http-instead-of-cors-escape') at the
             // fork() call to get a sense of what's normal.
             throw new Error('Possible memory leak: ' + memory_usage_delta +
                 ' bytes was not released, which exceeds the ' + memMax +
@@ -79,7 +79,7 @@ describe('memory usage', function() {
           }
           done();
         });
-        cors_anywhere_child.send(null);
+        cors_escape_child.send(null);
         return;
       }
       http.request(request, function() {

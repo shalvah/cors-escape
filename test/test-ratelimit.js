@@ -16,8 +16,8 @@ function assertLimited(rateLimitReturnValue, limit, period) {
   } else {
     msg = 'The number of requests is limited to ' + limit + ' per ' + period + ' minutes. ';
   }
-  msg += 'Please self-host CORS Anywhere if you need more quota. ' +
-    'See https://github.com/Rob--W/cors-anywhere#demo-server';
+  msg += 'Please self-host CORS Escape if you need more quota. ' +
+    'See https://github.com/Rob--W/cors-escape#demo-server';
   assert.equal(rateLimitReturnValue, msg);
 }
 
@@ -216,11 +216,11 @@ describe('Rate limit', function() {
   it('bad input', function() {
     assert.throws(function() {
       createRateLimitChecker('0 1 /');
-    }, 'Invalid CORSANYWHERE_RATELIMIT. Regex at index 0 must start and end with a slash ("/").');
+    }, 'Invalid CORSESCAPE_RATELIMIT. Regex at index 0 must start and end with a slash ("/").');
 
     assert.throws(function() {
       createRateLimitChecker('0 1 a,/');
-    }, 'Invalid CORSANYWHERE_RATELIMIT. Regex at index 1 must start and end with a slash ("/").');
+    }, 'Invalid CORSESCAPE_RATELIMIT. Regex at index 1 must start and end with a slash ("/").');
 
     assert.throws(function() {
       createRateLimitChecker('0 1 /(/');

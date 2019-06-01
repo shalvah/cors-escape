@@ -3,20 +3,20 @@ const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 2000;
 
 // Grab the blacklist from the environment so that we can update the blacklist without deploying
-// again. CORS Anywhere is open by design, and this blacklist is not used, except for countering
+// again. CORS Escape is open by design, and this blacklist is not used, except for countering
 // immediate abuse (e.g. denial of service). If you want to block all origins except for some,
 // use originWhitelist instead.
 const {parseEnvVarAsList} = require('./lib/helpers');
-const originBlacklist = parseEnvVarAsList(process.env.CORSANYWHERE_BLACKLIST);
-const originWhitelist = parseEnvVarAsList(process.env.CORSANYWHERE_WHITELIST);
+const originBlacklist = parseEnvVarAsList(process.env.CORSESCAPE_BLACKLIST);
+const originWhitelist = parseEnvVarAsList(process.env.CORSESCAPE_WHITELIST);
 
 debug('Blacklisting origins: ' + originBlacklist);
 debug('Whitelisting origins: ' + originWhitelist);
 
 // Set up rate-limiting to avoid abuse of the public server.
-const checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELIMIT);
+const checkRateLimit = require('./lib/rate-limit')(process.env.CORSESCAPE_RATELIMIT);
 
-const corsProxy = require('./lib/cors-anywhere');
+const corsProxy = require('./lib/cors-escape');
 corsProxy.createServer({
     originBlacklist,
     originWhitelist,

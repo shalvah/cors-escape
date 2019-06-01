@@ -1,6 +1,6 @@
-// When this module is loaded, CORS Anywhere is started.
+// When this module is loaded, CORS Escape is started.
 // Then, a request is generated to warm up the server (just in case).
-// Then the base URL of CORS Anywhere is sent to the parent process.
+// Then the base URL of CORS Escape is sent to the parent process.
 // ...
 // When the parent process is done, it sends an empty message to this child
 // process, which in turn records the change in used heap space.
@@ -31,7 +31,7 @@ function getMemoryUsage(callback) {
 }
 
 var server;
-if (process.argv.indexOf('use-http-instead-of-cors-anywhere') >= 0) {
+if (process.argv.indexOf('use-http-instead-of-cors-escape') >= 0) {
   server = require('http').createServer(function(req, res) { res.end(); });
 } else {
   server = require('../').createServer();

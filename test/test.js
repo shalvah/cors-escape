@@ -28,24 +28,24 @@ request.Test.prototype.expectNoHeader = function(header, done) {
   return done ? this.end(done) : this;
 };
 
-var cors_anywhere;
-var cors_anywhere_port;
+var cors_escape;
+var cors_escape_port;
 function stopServer(done) {
-  cors_anywhere.close(function() {
+  cors_escape.close(function() {
     done();
   });
-  cors_anywhere = null;
+  cors_escape = null;
 }
 
 describe('Basic functionality', function() {
   before(function() {
-    cors_anywhere = createServer();
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape = createServer();
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/')
       .type('text/plain')
       .expect('Access-Control-Allow-Origin', '*')
@@ -53,41 +53,41 @@ describe('Basic functionality', function() {
   });
 
   it('GET /iscorsneeded', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/iscorsneeded')
       .expectNoHeader('access-control-allow-origin', done);
   });
 
   it('GET /example.com:65536', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com:65536')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(400, 'Port number too large: 65536', done);
   });
 
   it('GET /favicon.ico', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/favicon.ico')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(404, 'Invalid host: favicon.ico', done);
   });
 
   it('GET /robots.txt', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/robots.txt')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(404, 'Invalid host: robots.txt', done);
   });
 
   it('GET /http://robots.txt should be proxied', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/http://robots.txt')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, 'this is http://robots.txt', done);
   });
 
   it('GET /example.com', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect('x-request-url', 'http://example.com/')
@@ -95,7 +95,7 @@ describe('Basic functionality', function() {
   });
 
   it('GET /example.com:80', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com:80')
       .expect('Access-Control-Allow-Origin', '*')
       .expect('x-request-url', 'http://example.com:80/')
@@ -103,7 +103,7 @@ describe('Basic functionality', function() {
   });
 
   it('GET /example.com:443', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com:443')
       .expect('Access-Control-Allow-Origin', '*')
       .expect('x-request-url', 'https://example.com:443/')
@@ -112,7 +112,7 @@ describe('Basic functionality', function() {
 
   it('GET //example.com', function(done) {
     // '/example.com' is an invalid URL.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('//example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, helpText, done);
@@ -120,7 +120,7 @@ describe('Basic functionality', function() {
 
   it('GET ///example.com', function(done) {
     // API base URL (with trailing slash) + '//example.com'
-    request(cors_anywhere)
+    request(cors_escape)
       .get('///example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect('x-request-url', 'http://example.com/')
@@ -128,7 +128,7 @@ describe('Basic functionality', function() {
   });
 
   it('GET /http://example.com', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/http://example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect('x-request-url', 'http://example.com/')
@@ -136,7 +136,7 @@ describe('Basic functionality', function() {
   });
 
   it('POST plain text', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .post('/example.com/echopost')
       .send('{"this is a request body & should not be mangled":1.00}')
       .expect('Access-Control-Allow-Origin', '*')
@@ -144,7 +144,7 @@ describe('Basic functionality', function() {
   });
 
   it('POST file', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .post('/example.com/echopost')
       .attach('file', path.join(__dirname, 'dummy.txt'))
       .expect('Access-Control-Allow-Origin', '*')
@@ -154,7 +154,7 @@ describe('Basic functionality', function() {
   it('HEAD with redirect should be followed', function(done) {
     // Redirects are automatically followed, because redirects are to be
     // followed automatically per specification regardless of the HTTP verb.
-    request(cors_anywhere)
+    request(cors_escape)
       .head('/example.com/redirect')
       .redirects(0)
       .expect('Access-Control-Allow-Origin', '*')
@@ -168,7 +168,7 @@ describe('Basic functionality', function() {
   });
 
   it('GET with redirect should be followed', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/redirect')
       .redirects(0)
       .expect('Access-Control-Allow-Origin', '*')
@@ -182,7 +182,7 @@ describe('Basic functionality', function() {
   });
 
   it('GET with redirect loop should interrupt', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/redirectloop')
       .redirects(0)
       .expect('Access-Control-Allow-Origin', '*')
@@ -197,7 +197,7 @@ describe('Basic functionality', function() {
   });
 
   it('POST with 302 redirect should be followed', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .post('/example.com/redirectpost')
       .redirects(0)
       .expect('Access-Control-Allow-Origin', '*')
@@ -210,7 +210,7 @@ describe('Basic functionality', function() {
 
   it('GET with 302 redirect without Location header should not be followed', function(done) {
     // There is nothing to follow, so let the browser decide what to do with it.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/redirectwithoutlocation')
       .redirects(0)
       .expect('Access-Control-Allow-Origin', '*')
@@ -223,7 +223,7 @@ describe('Basic functionality', function() {
   it('POST with 307 redirect should not be handled', function(done) {
     // Because of implementation difficulties (having to keep the request body
     // in memory), handling HTTP 307/308 redirects is deferred to the requestor.
-    request(cors_anywhere)
+    request(cors_escape)
       .post('/example.com/redirect307')
       .redirects(0)
       .expect('Access-Control-Allow-Origin', '*')
@@ -235,14 +235,14 @@ describe('Basic functionality', function() {
   });
 
   it('OPTIONS /', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .options('/')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, '', done);
   });
 
   it('OPTIONS / with Access-Control-Request-Method / -Headers', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .options('/')
       .set('Access-Control-Request-Method', 'DELETE')
       .set('Access-Control-Request-Headers', 'X-Tralala')
@@ -255,50 +255,50 @@ describe('Basic functionality', function() {
   it('OPTIONS //bogus', function(done) {
     // The preflight request always succeeds, regardless of whether the request
     // is valid.
-    request(cors_anywhere)
+    request(cors_escape)
       .options('//bogus')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, '', done);
   });
 
   it('X-Forwarded-* headers', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .set('test-include-xfwd', '')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-forwarded-port': String(cors_anywhere_port),
+        'x-forwarded-port': String(cors_escape_port),
         'x-forwarded-proto': 'http',
       }, done);
   });
 
   it('X-Forwarded-* headers (non-standard port)', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com:1337/echoheaders')
       .set('test-include-xfwd', '')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com:1337',
-        'x-forwarded-port': String(cors_anywhere_port),
+        'x-forwarded-port': String(cors_escape_port),
         'x-forwarded-proto': 'http',
       }, done);
   });
 
   it('X-Forwarded-* headers (https)', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/https://example.com/echoheaders')
       .set('test-include-xfwd', '')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-forwarded-port': String(cors_anywhere_port),
+        'x-forwarded-port': String(cors_escape_port),
         'x-forwarded-proto': 'http',
       }, done);
   });
 
   it('Ignore cookies', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/setcookie')
       .expect('Access-Control-Allow-Origin', '*')
       .expect('Set-Cookie3', 'z')
@@ -309,8 +309,8 @@ describe('Basic functionality', function() {
 
 describe('Proxy errors', function() {
   before(function() {
-    cors_anywhere = createServer();
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape = createServer();
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
@@ -355,14 +355,14 @@ describe('Proxy errors', function() {
   });
 
   it('Proxy error', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/proxyerror')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(404, 'Not found because of proxy error: Error: throw node', done);
   });
 
   it('Content-Length mismatch', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/' + bad_http_server_url)
       .expect('Access-Control-Allow-Origin', '*')
       .expect(404, 'Not found because of proxy error: Error: Parse Error', done);
@@ -371,7 +371,7 @@ describe('Proxy errors', function() {
   it('Content-Encoding invalid body', function(done) {
     // The HTTP status can't be changed because the headers have already been
     // sent.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/' + bad_tcp_server_url)
       .expect('Access-Control-Allow-Origin', '*')
       .expect(418, '', done);
@@ -381,13 +381,13 @@ describe('Proxy errors', function() {
 describe('server on https', function() {
   var NODE_TLS_REJECT_UNAUTHORIZED;
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       httpsOptions: {
         key: fs.readFileSync(path.join(__dirname, 'key.pem')),
         cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
       },
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
     // Disable certificate validation in case the certificate expires.
     NODE_TLS_REJECT_UNAUTHORIZED = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -402,37 +402,37 @@ describe('server on https', function() {
   });
 
   it('X-Forwarded-* headers (http)', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .set('test-include-xfwd', '')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-forwarded-port': String(cors_anywhere_port),
+        'x-forwarded-port': String(cors_escape_port),
         'x-forwarded-proto': 'https',
       }, done);
   });
 
   it('X-Forwarded-* headers (https)', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/https://example.com/echoheaders')
       .set('test-include-xfwd', '')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-forwarded-port': String(cors_anywhere_port),
+        'x-forwarded-port': String(cors_escape_port),
         'x-forwarded-proto': 'https',
       }, done);
   });
 
   it('X-Forwarded-* headers (https, non-standard port)', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/https://example.com:1337/echoheaders')
       .set('test-include-xfwd', '')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com:1337',
-        'x-forwarded-port': String(cors_anywhere_port),
+        'x-forwarded-port': String(cors_escape_port),
         'x-forwarded-proto': 'https',
       }, done);
   });
@@ -440,15 +440,15 @@ describe('server on https', function() {
 
 describe('originBlacklist', function() {
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       originBlacklist: ['http://denied.origin.test'],
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /example.com with denied origin', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'http://denied.origin.test')
       .expect('Access-Control-Allow-Origin', '*')
@@ -456,7 +456,7 @@ describe('originBlacklist', function() {
   });
 
   it('GET /example.com without denied origin', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'https://denied.origin.test') // Note: different scheme!
       .expect('Access-Control-Allow-Origin', '*')
@@ -464,7 +464,7 @@ describe('originBlacklist', function() {
   });
 
   it('GET /example.com without origin', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, done);
@@ -473,15 +473,15 @@ describe('originBlacklist', function() {
 
 describe('originWhitelist', function() {
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       originWhitelist: ['https://permitted.origin.test'],
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /example.com with permitted origin', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'https://permitted.origin.test')
       .expect('Access-Control-Allow-Origin', '*')
@@ -489,7 +489,7 @@ describe('originWhitelist', function() {
   });
 
   it('GET /example.com without permitted origin', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'http://permitted.origin.test') // Note: different scheme!
       .expect('Access-Control-Allow-Origin', '*')
@@ -497,7 +497,7 @@ describe('originWhitelist', function() {
   });
 
   it('GET /example.com without origin', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(403, done);
@@ -508,26 +508,26 @@ describe('checkRateLimit', function() {
   afterEach(stopServer);
 
   it('GET /example.com without rate-limit', function(done) {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       checkRateLimit: function() {},
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
-    request(cors_anywhere)
+    cors_escape_port = cors_escape.listen(0).address().port;
+    request(cors_escape)
       .get('/example.com/')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, done);
   });
 
   it('GET /example.com with rate-limit', function(done) {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       checkRateLimit: function(origin) {
         // Non-empty value. Let's return the origin parameter so that we also verify that the
         // the parameter is really the origin.
         return '[' + origin + ']';
       },
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
-    request(cors_anywhere)
+    cors_escape_port = cors_escape.listen(0).address().port;
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'http://example.net:1234')
       .expect('Access-Control-Allow-Origin', '*')
@@ -538,15 +538,15 @@ describe('checkRateLimit', function() {
 
 describe('redirectSameOrigin', function() {
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       redirectSameOrigin: true,
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /example.com with Origin: http://example.com', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'http://example.com')
       .expect('Access-Control-Allow-Origin', '*')
@@ -558,7 +558,7 @@ describe('redirectSameOrigin', function() {
 
   it('GET /example.com with Origin: https://example.com', function(done) {
     // Not same-origin because of different schemes.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'https://example.com')
       .expect('Access-Control-Allow-Origin', '*')
@@ -567,7 +567,7 @@ describe('redirectSameOrigin', function() {
 
   it('GET /example.com with Origin: http://example.com:1234', function(done) {
     // Not same-origin because of different ports.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'http://example.com:1234')
       .expect('Access-Control-Allow-Origin', '*')
@@ -576,7 +576,7 @@ describe('redirectSameOrigin', function() {
 
   it('GET /example.com:1234 with Origin: http://example.com', function(done) {
     // Not same-origin because of different ports.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com:1234/')
       .set('Origin', 'http://example.com')
       .expect('Access-Control-Allow-Origin', '*')
@@ -585,7 +585,7 @@ describe('redirectSameOrigin', function() {
 
   it('GET /example.com with Origin: http://example.com.test', function(done) {
     // Not same-origin because of different host names.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'http://example.com.test')
       .expect('Access-Control-Allow-Origin', '*')
@@ -594,7 +594,7 @@ describe('redirectSameOrigin', function() {
 
   it('GET /example.com.com with Origin: http://example.com', function(done) {
     // Not same-origin because of different host names.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com.com/')
       .set('Origin', 'http://example.com')
       .expect('Access-Control-Allow-Origin', '*')
@@ -603,7 +603,7 @@ describe('redirectSameOrigin', function() {
 
   it('GET /prefix.example.com with Origin: http://example.com', function(done) {
     // Not same-origin because of different host names.
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/prefix.example.com/')
       .set('Origin', 'http://example.com')
       .expect('Access-Control-Allow-Origin', '*')
@@ -613,22 +613,22 @@ describe('redirectSameOrigin', function() {
 
 describe('requireHeaders', function() {
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       requireHeaders: ['origin', 'x-requested-with'],
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /example.com without header', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(400, 'Missing required request header. Must specify one of: origin,x-requested-with', done);
   });
 
   it('GET /example.com with X-Requested-With header', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('X-Requested-With', '')
       .expect('Access-Control-Allow-Origin', '*')
@@ -636,7 +636,7 @@ describe('requireHeaders', function() {
   });
 
   it('GET /example.com with Origin header', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/')
       .set('Origin', 'null')
       .expect('Access-Control-Allow-Origin', '*')
@@ -645,11 +645,11 @@ describe('requireHeaders', function() {
 
   it('GET /example.com without header (requireHeaders as string)', function(done) {
     stopServer(function() {
-      cors_anywhere = createServer({
+      cors_escape = createServer({
         requireHeaders: ['origin'],
       });
-      cors_anywhere_port = cors_anywhere.listen(0).address().port;
-      request(cors_anywhere)
+      cors_escape_port = cors_escape.listen(0).address().port;
+      request(cors_escape)
         .get('/example.com/')
         .expect('Access-Control-Allow-Origin', '*')
         .expect(400, 'Missing required request header. Must specify one of: origin', done);
@@ -658,11 +658,11 @@ describe('requireHeaders', function() {
 
   it('GET /example.com with header (requireHeaders as string)', function(done) {
     stopServer(function() {
-      cors_anywhere = createServer({
+      cors_escape = createServer({
         requireHeaders: ['origin'],
       });
-      cors_anywhere_port = cors_anywhere.listen(0).address().port;
-      request(cors_anywhere)
+      cors_escape_port = cors_escape.listen(0).address().port;
+      request(cors_escape)
         .get('/example.com/')
         .set('Origin', 'null')
         .expect('Access-Control-Allow-Origin', '*')
@@ -672,11 +672,11 @@ describe('requireHeaders', function() {
 
   it('GET /example.com without header (requireHeader as string, uppercase)', function(done) {
     stopServer(function() {
-      cors_anywhere = createServer({
+      cors_escape = createServer({
         requireHeader: 'ORIGIN',
       });
-      cors_anywhere_port = cors_anywhere.listen(0).address().port;
-      request(cors_anywhere)
+      cors_escape_port = cors_escape.listen(0).address().port;
+      request(cors_escape)
         .get('/example.com/')
         .expect('Access-Control-Allow-Origin', '*')
         .expect(400, 'Missing required request header. Must specify one of: origin', done);
@@ -685,11 +685,11 @@ describe('requireHeaders', function() {
 
   it('GET /example.com with header (requireHeader as string, uppercase)', function(done) {
     stopServer(function() {
-      cors_anywhere = createServer({
+      cors_escape = createServer({
         requireHeader: 'ORIGIN',
       });
-      cors_anywhere_port = cors_anywhere.listen(0).address().port;
-      request(cors_anywhere)
+      cors_escape_port = cors_escape.listen(0).address().port;
+      request(cors_escape)
         .get('/example.com/')
         .set('Origin', 'null')
         .expect('Access-Control-Allow-Origin', '*')
@@ -699,11 +699,11 @@ describe('requireHeaders', function() {
 
   it('GET /example.com (requireHeader is an empty array)', function(done) {
     stopServer(function() {
-      cors_anywhere = createServer({
+      cors_escape = createServer({
         requireHeader: [],
       });
-      cors_anywhere_port = cors_anywhere.listen(0).address().port;
-      request(cors_anywhere)
+      cors_escape_port = cors_escape.listen(0).address().port;
+      request(cors_escape)
         .get('/example.com/')
         .expect('Access-Control-Allow-Origin', '*')
         .expect(200, 'Response from example.com', done);
@@ -713,15 +713,15 @@ describe('requireHeaders', function() {
 
 describe('removeHeaders', function() {
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       removeHeaders: ['cookie', 'cookie2'],
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /example.com with request cookie', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .set('cookie', 'a')
       .set('cookie2', 'b')
@@ -732,7 +732,7 @@ describe('removeHeaders', function() {
   });
 
   it('GET /example.com with unknown header', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .set('cookie', 'a')
       .set('cookie2', 'b')
@@ -747,31 +747,31 @@ describe('removeHeaders', function() {
 
 describe('setHeaders', function() {
   before(function() {
-    cors_anywhere = createServer({
-      setHeaders: {'x-powered-by': 'CORS Anywhere'},
+    cors_escape = createServer({
+      setHeaders: {'x-powered-by': 'CORS Escape'},
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /example.com', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-powered-by': 'CORS Anywhere',
+        'x-powered-by': 'CORS Escape',
       }, done);
   });
 
   it('GET /example.com should replace header', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .set('x-powered-by', 'should be replaced')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-powered-by': 'CORS Anywhere',
+        'x-powered-by': 'CORS Escape',
       }, done);
   });
 });
@@ -779,47 +779,47 @@ describe('setHeaders', function() {
 describe('setHeaders + removeHeaders', function() {
   before(function() {
     // setHeaders takes precedence over removeHeaders
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       removeHeaders: ['x-powered-by'],
-      setHeaders: {'x-powered-by': 'CORS Anywhere'},
+      setHeaders: {'x-powered-by': 'CORS Escape'},
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /example.com', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-powered-by': 'CORS Anywhere',
+        'x-powered-by': 'CORS Escape',
       }, done);
   });
 
   it('GET /example.com should replace header', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .set('x-powered-by', 'should be replaced')
       .expect('Access-Control-Allow-Origin', '*')
       .expectJSON({
         host: 'example.com',
-        'x-powered-by': 'CORS Anywhere',
+        'x-powered-by': 'CORS Escape',
       }, done);
   });
 });
 
 describe('Access-Control-Max-Age set', function() {
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       corsMaxAge: 600,
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/')
       .type('text/plain')
       .expect('Access-Control-Allow-Origin', '*')
@@ -828,7 +828,7 @@ describe('Access-Control-Max-Age set', function() {
   });
 
   it('GET /example.com', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect('Access-Control-Max-Age', '600')
@@ -838,13 +838,13 @@ describe('Access-Control-Max-Age set', function() {
 
 describe('Access-Control-Max-Age not set', function() {
   before(function() {
-    cors_anywhere = createServer();
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape = createServer();
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('GET /', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/')
       .type('text/plain')
       .expect('Access-Control-Allow-Origin', '*')
@@ -853,7 +853,7 @@ describe('Access-Control-Max-Age not set', function() {
   });
 
   it('GET /example.com', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expectNoHeader('Access-Control-Max-Age')
@@ -863,17 +863,17 @@ describe('Access-Control-Max-Age not set', function() {
 
 describe('httpProxyOptions.xfwd=false', function() {
   before(function() {
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       httpProxyOptions: {
         xfwd: false,
       },
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   after(stopServer);
 
   it('X-Forwarded-* headers should not be set', function(done) {
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/example.com/echoheaders')
       .set('test-include-xfwd', '')
       .expect('Access-Control-Allow-Origin', '*')
@@ -893,12 +893,12 @@ describe('httpProxyOptions.getProxyForUrl', function() {
     });
     proxy_url = 'http://127.0.0.1:' + proxy_server.listen(0).address().port;
 
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       httpProxyOptions: {
         xfwd: false,
       },
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
   });
   afterEach(function() {
     // Assuming that they were not set before.
@@ -916,7 +916,7 @@ describe('httpProxyOptions.getProxyForUrl', function() {
   it('http_proxy should be respected for matching domains', function(done) {
     process.env.http_proxy = proxy_url;
 
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/http://example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, 'GET http://example.com/ Host=example.com', done);
@@ -924,7 +924,7 @@ describe('httpProxyOptions.getProxyForUrl', function() {
 
   it('http_proxy should be ignored for http URLs', function(done) {
     process.env.http_proxy = proxy_url;
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/https://example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, 'Response from https://example.com', done);
@@ -933,7 +933,7 @@ describe('httpProxyOptions.getProxyForUrl', function() {
   it('https_proxy should be respected for matching domains', function(done) {
     process.env.https_proxy = proxy_url;
 
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/https://example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, 'GET https://example.com/ Host=example.com', done);
@@ -941,7 +941,7 @@ describe('httpProxyOptions.getProxyForUrl', function() {
 
   it('https_proxy should be ignored for http URLs', function(done) {
     process.env.https_proxy = proxy_url;
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/http://example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, 'Response from example.com', done);
@@ -950,7 +950,7 @@ describe('httpProxyOptions.getProxyForUrl', function() {
   it('https_proxy + no_proxy should not intercept requests in no_proxy', function(done) {
     process.env.https_proxy = proxy_url;
     process.env.no_proxy = 'example.com:443';
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/https://example.com')
       .expect('Access-Control-Allow-Origin', '*')
       .expect(200, 'Response from https://example.com', done);
@@ -965,12 +965,12 @@ describe('helpFile', function() {
     var customHelpTextPath = path.join(__dirname, './customHelp.txt');
     var customHelpText = fs.readFileSync(customHelpTextPath, {encoding: 'utf8'});
 
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       helpFile: customHelpTextPath,
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
 
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/')
       .type('text/plain')
       .expect('Access-Control-Allow-Origin', '*')
@@ -981,12 +981,12 @@ describe('helpFile', function() {
     var customHelpTextPath = path.join(__dirname, './customHelp.html');
     var customHelpText = fs.readFileSync(customHelpTextPath, {encoding: 'utf8'});
 
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       helpFile: customHelpTextPath,
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
 
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/')
       .type('text/html')
       .expect('Access-Control-Allow-Origin', '*')
@@ -996,12 +996,12 @@ describe('helpFile', function() {
   it('GET / with non-existent help file', function(done) {
     var customHelpTextPath = path.join(__dirname, 'Some non-existing file.');
 
-    cors_anywhere = createServer({
+    cors_escape = createServer({
       helpFile: customHelpTextPath,
     });
-    cors_anywhere_port = cors_anywhere.listen(0).address().port;
+    cors_escape_port = cors_escape.listen(0).address().port;
 
-    request(cors_anywhere)
+    request(cors_escape)
       .get('/')
       .type('text/plain')
       .expect('Access-Control-Allow-Origin', '*')
