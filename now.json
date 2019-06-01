@@ -2,5 +2,10 @@
   "builds": [
     { "src": "server.js", "use": "@now/node-server" }
   ],
-  "routes": [{ "src": "/(?<url>.*)", "dest": "/server.js?url=$url" }]
+  "routes": [{ "src": "/(?<url>.*)", "dest": "/server.js?url=$url" }],
+  "build": {
+    "env": {
+      "DEBUG": "cors-escape"
+    }
+  }
 }
