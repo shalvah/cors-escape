@@ -1,9 +1,6 @@
-[![Build Status](https://travis-ci.org/Rob--W/cors-anywhere.svg?branch=master)](https://travis-ci.org/Rob--W/cors-anywhere)
-[![Coverage Status](https://coveralls.io/repos/github/Rob--W/cors-anywhere/badge.svg?branch=master)](https://coveralls.io/github/Rob--W/cors-anywhere?branch=master)
+**CORS Escape** is a Node.js proxy which adds CORS headers to the proxied request. Inspired by [CORS-Anywhere](https://github.com/Rob--W/)
 
-**CORS Anywhere** is a NodeJS proxy which adds CORS headers to the proxied request.
-
-The url to proxy is literally taken from the path, validated and proxied. The protocol
+The url to proxy is taken from the path, validated and proxied. The protocol
 part of the proxied URI is optional, and defaults to "http". If port 443 is specified,
 the protocol defaults to "https".
 
@@ -130,9 +127,8 @@ only provided so that you can easily and quickly try out CORS Anywhere. To ensur
 stays available to everyone, the number of requests per period is limited, except for requests from
 some explicitly whitelisted origins.
 
-If you expect lots of traffic, please host your own instance of CORS Anywhere, and make sure that
-the CORS Anywhere server only whitelists your site to prevent others from using your instance of
-CORS Anywhere as an open proxy.
+If you expect lots of traffic, please host your own instance of CORS Escape, and make sure that
+the CORS Escape server only whitelists your site to prevent others from using your instance of CORS Escape as an open proxy.
 
 For instance, to run a CORS Anywhere server that accepts any request from some example.com sites on
 port 8080, use:
@@ -142,40 +138,5 @@ export CORSANYWHERE_WHITELIST=https://example.com,http://example.com,http://exam
 node server.js
 ```
 
-This application can immediately be run on Heroku, see https://devcenter.heroku.com/articles/nodejs
-for instructions. Note that their [Acceptable Use Policy](https://www.heroku.com/policy/aup) forbids
-the use of Heroku for operating an open proxy, so make sure that you either enforce a whitelist as
-shown above, or severly rate-limit the number of requests.
-
-For example, to blacklist abuse.example.com and rate-limit everything to 50 requests per 3 minutes,
-except for my.example.com and my2.example.com (which may be unlimited), use:
-
-```
-export PORT=8080
-export CORSANYWHERE_BLACKLIST=https://abuse.example.com,http://abuse.example.com
-export CORSANYWHERE_RATELIMIT='50 3 my.example.com my2.example.com'
-node server.js
-```
-
-
 ## License
-
-Copyright (C) 2013 - 2016 Rob Wu <rob@robwu.nl>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+MIT, baby.
